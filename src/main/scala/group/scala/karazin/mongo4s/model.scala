@@ -180,8 +180,8 @@ object model:
                                                                    default: Option[Default],
                                                                    output: Output)
     end Bucket
-    final case class Bucket[GroupBy, Default, Boundaries, Output]($bucket:
-                                                                  Bucket.Command[GroupBy, Default, Boundaries, Output]
+    final case class Bucket[GroupBy, Default, Boundary, Output]($bucket:
+                                                                  Bucket.Command[GroupBy, Default, Boundary, Output]
                                                                  )
 
     object BucketAuto:
