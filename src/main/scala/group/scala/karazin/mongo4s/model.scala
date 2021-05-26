@@ -167,7 +167,7 @@ object model:
     final case class Cursor(batchSize: Option[Int] = None) derives Codec.AsObject
 
     type Pipeline =
-      AddFields[_] | Bucket[_, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
+      AddFields[_] | Bucket[_, _, _, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
       GraphLookup[_] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
       Match[_] | Merge | Out | PlanCacheStats | Project[_] | Reduct[_] | ReplaceRoot[_] | ReplaceWith[_] |
       Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
@@ -175,12 +175,14 @@ object model:
     final case class AddFields[Document]($addFields: Document)
 
     object Bucket:
-      final case class Command[GroupBy, Output](groupBy: GroupBy,
-                                                boundaries: List[Int],
-                                                default: Option[Int],
-                                                output: List[Output])
+      final case class Command[GroupBy, Default, Boundaries, Output](groupBy: GroupBy,
+                                                boundaries: List[Boundaries],
+                                                default: Option[Default],
+                                                output: Output)
     end Bucket
-    final case class Bucket[GroupBy, Output]($bucket: Bucket.Command[GroupBy, Output])
+    final case class Bucket[GroupBy, Default, Boundaries, Output]($bucket:
+                                                                  Bucket.Command[GroupBy, Default, Boundaries, Output]
+                                                                 )
 
     object BucketAuto:
       final case class Command[GroupBy, Output](groupBy: GroupBy,
