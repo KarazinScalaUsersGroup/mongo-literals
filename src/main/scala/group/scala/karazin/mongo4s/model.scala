@@ -175,10 +175,10 @@ object model:
     final case class AddFields[Document]($addFields: Document)
 
     object Bucket:
-      final case class Command[GroupBy, Default, Boundaries, Output](groupBy: GroupBy,
-                                                boundaries: List[Boundaries],
-                                                default: Option[Default],
-                                                output: Output)
+      final case class Command[GroupBy, Default, Boundary, Output](groupBy: GroupBy,
+                                                                   boundaries: List[Boundary],
+                                                                   default: Option[Default],
+                                                                   output: Output)
     end Bucket
     final case class Bucket[GroupBy, Default, Boundaries, Output]($bucket:
                                                                   Bucket.Command[GroupBy, Default, Boundaries, Output]
