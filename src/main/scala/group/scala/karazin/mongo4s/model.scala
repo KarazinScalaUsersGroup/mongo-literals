@@ -185,7 +185,7 @@ object model:
     object BucketAuto:
       final case class Command[GroupBy, Output](groupBy: GroupBy,
                                                 buckets: Int,
-                                                output: List[Output],
+                                                output: Option[Output],
                                                 granularity: Option[String])
     end BucketAuto
     final case class BucketAuto[GroupBy, Output]($bucketAuto: BucketAuto.Command[GroupBy, Output])
