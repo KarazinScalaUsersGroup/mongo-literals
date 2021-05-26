@@ -178,7 +178,7 @@ object model:
       final case class Command[GroupBy, Default, Boundary, Output](groupBy: GroupBy,
                                                                    boundaries: List[Boundary],
                                                                    default: Option[Default],
-                                                                   output: Output)
+                                                                   output: Option[Output])
     end Bucket
     final case class Bucket[GroupBy, Default, Boundary, Output]($bucket:
                                                                   Bucket.Command[GroupBy, Default, Boundary, Output]
