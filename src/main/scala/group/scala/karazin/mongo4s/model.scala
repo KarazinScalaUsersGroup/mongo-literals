@@ -297,7 +297,7 @@ object model:
     end ReplaceRoot
     final case class ReplaceRoot[NewRoot]($replaceRoot: ReplaceRoot.Command[NewRoot])
 
-    final case class ReplaceWith[ReplaceWith]($replaceWith: ReplaceWith)
+    final case class ReplaceWith[Replacement]($replaceWith: Replacement)
 
     object Sample:
       final case class Command(size: Int)
