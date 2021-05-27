@@ -272,8 +272,8 @@ object model:
     final case class Match[Match]($match: Match)
 
     object Merge:
-      final case class MergeInDb(db: String, coll: String)
-      final case class Command(into: String | MergeInDb,
+      final case class Database(db: String, coll: String)
+      final case class Command(into: String | Database,
                                on: Option[String | List[String]],
                                let: Option[String],
                                whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | "pipeline"],
