@@ -318,9 +318,9 @@ object model:
     final case class SortByCount[SortByCount]($sortByCount: SortByCount)
 
     object UnionWith:
-      type Command = UnionWithCommand | String
+      type Command = WithPipeline | String
       /** WARN!!! `pipeline` cannot include the $out and $merge stages */
-      final case class UnionWithCommand(coll: String, pipeline: List[Aggregate.PipelineStage])
+      final case class WithPipeline(coll: String, pipeline: List[Aggregate.PipelineStage])
     end UnionWith
     final case class UnionWith($unionWith: UnionWith.Command)
 
