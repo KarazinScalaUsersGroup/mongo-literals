@@ -169,7 +169,7 @@ object model:
     type Pipeline =
       AddFields[_] | Bucket[_, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
       GraphLookup[_] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
-      Match[_] | Merge | Out | PlanCacheStats | Project[_] | Reduct[_] | ReplaceRoot[_] | ReplaceWith[_] |
+      Match[_] | Merge[_] | Out | PlanCacheStats | Project[_] | Reduct[_] | ReplaceRoot[_] | ReplaceWith[_] |
       Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
     final case class AddFields[Document]($addFields: Document)
@@ -273,13 +273,13 @@ object model:
 
     object Merge:
       final case class Database(db: String, coll: String)
-      final case class Command(into: String | Database,
+      final case class Command[Variables](into: String | Database,
                                on: Option[String | List[String]],
-                               let: Option[String],
+                               let: Option[Variables],
                                whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | "pipeline"],
                                whenNotMatched: Option["insert" | "discard" | "fail"])
     end Merge
-    final case class Merge($merge: Merge.Command)
+    final case class Merge[Variables]($merge: Merge.Command[Variables])
 
     object Out:
       type Command = Out | String
