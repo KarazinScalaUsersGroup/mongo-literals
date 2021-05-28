@@ -101,8 +101,7 @@ object model:
 
     final case class Delete[Q, Hint](q: Q,
                                      limit: Limit,
-                                     collation: Option[Collation] = None, 
-                                     comment: Option[String] = None, 
+                                     collation: Option[Collation] = None,
                                      hint: Option[Hint] = None) derives Codec.AsObject
     
   end Delete
