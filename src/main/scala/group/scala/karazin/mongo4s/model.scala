@@ -75,25 +75,22 @@ object model:
 
   object Update:
 
-    final case class Update[Q, U](q: Q,
-                                  u: U,
-                                  upsert: Option[Boolean] = None,
-                                  multi: Option[Boolean] = None,
-                                  collation: Option[Collation] = None) derives Codec.AsObject
+    final case class Update[Q, U, ArrayFilters, Hint](q: Q,
+                                                      u: U,
+                                                      upsert: Option[Boolean] = None,
+                                                      multi: Option[Boolean] = None,
+                                                      collation: Option[Collation] = None,
+                                                      arrayFilters: Option[List[ArrayFilters]] = None,
+                                                      hint: Option[Hint] = None) derives Codec.AsObject
 
   end Update
 
-  final case class Update[Q, U](update: String,
-                                updates: List[Update.Update[Q, U]],
-                                ordered: Option[Boolean] = None,
-                                writeConcern: Option[WriteConcern] = None,
-                                bypassDocumentValidation: Option[Boolean] = None,
-                                comment: Option[String] = None) derives Codec.AsObject
-
-  final case class CustomUpdate[Q, U](update: String,
-                                      updates: List[Update.Update[Q, U]],
-                                      writeConcern: WriteConcern) derives Codec.AsObject
-
+  final case class Update[Q, U, ArrayFilters, Hint, Comment](update: String,
+                                                             updates: List[Update.Update[Q, U, ArrayFilters, Hint]],
+                                                             ordered: Option[Boolean] = None,
+                                                             writeConcern: Option[WriteConcern] = None,
+                                                             bypassDocumentValidation: Option[Boolean] = None,
+                                                             comment: Option[Comment] = None) derives Codec.AsObject
 
   object Delete:
 
