@@ -113,11 +113,11 @@ object model:
       }
   }
 
-  final case class Delete[Q, Hint](delete: String,
+  final case class Delete[Q, Hint, Comment](delete: String,
                                    deletes: List[Delete.Delete[Q, Hint]],
                                    ordered: Option[Boolean] = None,
                                    writeConcern: Option[WriteConcern] = None,
-                                   comment: Option[Json] = None) derives Codec.AsObject
+                                   comment: Option[Comment] = None) derives Codec.AsObject
 
   final case class Find[Filter, Sort, Projection](find: String,
                                                   filter: Option[Filter] = None,
