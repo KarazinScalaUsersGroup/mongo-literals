@@ -141,7 +141,7 @@ object model:
                                                   collation: Option[Collation] = None,
                                                   allowDiskUse: Option[Boolean] = None) derives Codec.AsObject
 
-  final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint](findAndModify: String,
+  final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint, Comment](findAndModify: String,
                                                               query: Option[Query] = None,
                                                               sort: Option[Sort] = None,
                                                               remove: Option[Boolean] = None,
@@ -155,7 +155,7 @@ object model:
                                                               collation: Option[Collation] = None,
                                                               arrayFilters: Option[List[ArrayFilters]] = None,
                                                               hint: Option[Hint] = None,
-                                                              comment: Option[Json] = None) derives Codec.AsObject
+                                                              comment: Option[Comment] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
