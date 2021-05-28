@@ -192,10 +192,11 @@ object model:
 
     object CollStats:
       final case class LatencyStats(histograms: Boolean)
+      final case class StorageStats(scale: Int)
 
       // Should be rewritten with a builder
       final case class Command(latencyStats: Option[LatencyStats],
-                               storageStats: Option[EmptyObject],
+                               storageStats: Option[EmptyObject | StorageStats],
                                count: Option[EmptyObject],
                                queryExecStats: Option[EmptyObject])
     end CollStats
