@@ -208,7 +208,6 @@ object model:
     object GeoNear:
       type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon | GeometryCollection
 
-      // TODO consider using enum
       final case class Point private[mongo4s] (`type`: String, coordinates: List[Double])
       final case class LineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
       final case class Polygon private[mongo4s] (`type`: String, coordinates: List[List[List[Double]]])
