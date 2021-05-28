@@ -129,7 +129,7 @@ object model:
                                                   limit: Option[Int] = None,
                                                   batchSize: Option[Int] = None,
                                                   singleBatch: Option[Boolean] = None,
-                                                  comment: Option[JsonObject] = None,
+                                                  comment: Option[Json] = None,
                                                   maxTimeMS: Option[Int] = None,
                                                   readConcern: Option[ReadConcern] = None,
                                                   max: Option[Max] = None,
