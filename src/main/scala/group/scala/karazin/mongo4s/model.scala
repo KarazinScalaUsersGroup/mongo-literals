@@ -248,10 +248,13 @@ object model:
     final case class Limit($limit: Int)
 
     object ListSessions:
-      final case class User(user: String, db: String)
 
-      final case class Command(users: Option[List[User]],
-                               allUsers: Option[Boolean])
+      type Command = EmptyObject | Users | AllUsers
+
+      final case class User(user: String, db: String)
+      final case class Users(users: List[User])
+      final case class AllUsers(allUsers: Boolean)
+
     end ListSessions
     final case class ListSessions($listSessions: ListSessions.Command)
 
