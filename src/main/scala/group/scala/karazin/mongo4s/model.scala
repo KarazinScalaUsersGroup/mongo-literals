@@ -168,7 +168,7 @@ object model:
 
     type Pipeline =
       AddFields[_] | Bucket[_, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
-      GraphLookup[_] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
+      GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
       Match[_] | Merge | Out | PlanCacheStats | Project[_] | Reduct[_] | ReplaceRoot[_] | ReplaceWith[_] |
       Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
@@ -230,8 +230,8 @@ object model:
     final case class GeoNear[Query]($geoNear: GeoNear.Command[Query])
 
     object GraphLookup:
-      final case class Command[RestrictSearchWithMatch](from: String,
-                                                        startWith: String,
+      final case class Command[StartWithExpr, RestrictSearchWithMatch](from: String,
+                                                        startWith: StartWithExpr,
                                                         connectFromField: String,
                                                         connectToField: String,
                                                         as: String,
@@ -239,7 +239,8 @@ object model:
                                                         depthField: Option[String],
                                                         restrictSearchWithMatch: Option[RestrictSearchWithMatch])
     end GraphLookup
-    final case class GraphLookup[RestrictSearchWithMatch]($graphLookup: GraphLookup.Command[RestrictSearchWithMatch])
+    final case class GraphLookup[StartWithExpr, RestrictSearchWithMatch]
+    ($graphLookup: GraphLookup.Command[StartWithExpr, RestrictSearchWithMatch])
 
     final case class Group[Group]($group: Group)
 
