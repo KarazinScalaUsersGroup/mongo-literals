@@ -272,11 +272,12 @@ object model:
     final case class Match[Match]($match: Match)
 
     object Merge:
+      type PipelineStage = AddFields[_] | Set[_] | Project[_] | Unset | ReplaceRoot[_] | ReplaceWith[_]
       final case class Database(db: String, coll: String)
       final case class Command[Variables](into: String | Database,
                                on: Option[String | List[String]],
                                let: Option[Variables],
-                               whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | "pipeline"],
+                               whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | List[PipelineStage]],
                                whenNotMatched: Option["insert" | "discard" | "fail"])
     end Merge
     final case class Merge[Variables]($merge: Merge.Command[Variables])
