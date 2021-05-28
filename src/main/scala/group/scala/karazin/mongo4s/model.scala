@@ -120,7 +120,7 @@ object model:
                              ordered: Option[Boolean] = None,
                              writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
 
-  final case class Find[Filter, Sort, Projection, Hint, Min, Max](find: String,
+  final case class Find[Filter, Sort, Projection, Hint, Comment, Min, Max](find: String,
                                                   filter: Option[Filter] = None,
                                                   sort: Option[Sort] = None,
                                                   projection: Option[Projection] = None,
@@ -129,7 +129,7 @@ object model:
                                                   limit: Option[Int] = None,
                                                   batchSize: Option[Int] = None,
                                                   singleBatch: Option[Boolean] = None,
-                                                  comment: Option[Json] = None,
+                                                  comment: Option[Comment] = None,
                                                   maxTimeMS: Option[Int] = None,
                                                   readConcern: Option[ReadConcern] = None,
                                                   max: Option[Max] = None,
