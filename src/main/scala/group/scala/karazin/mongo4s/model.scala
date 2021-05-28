@@ -280,7 +280,7 @@ object model:
                                     whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | List[PipelineStage]],
                                     whenNotMatched: Option["insert" | "discard" | "fail"])
     end Merge
-    final case class Merge[Variables]($merge: Merge.Command[Variables])
+    final case class Merge[Let]($merge: Merge.Command[Let])
 
     object Out:
       type Command = Out | String
