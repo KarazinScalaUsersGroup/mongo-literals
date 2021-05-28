@@ -155,7 +155,7 @@ object model:
                                                               collation: Option[Collation] = None,
                                                               arrayFilters: Option[List[ArrayFilters]] = None,
                                                               hint: Option[Hint] = None,
-                                                              comment: Option[JsonObject] = None) derives Codec.AsObject
+                                                              comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
