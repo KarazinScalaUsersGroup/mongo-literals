@@ -117,7 +117,7 @@ object model:
                                    deletes: List[Delete.Delete[Q, Hint]],
                                    ordered: Option[Boolean] = None,
                                    writeConcern: Option[WriteConcern] = None,
-                                   comment: Option[JsonObject]) derives Codec.AsObject
+                                   comment: Option[JsonObject] = None) derives Codec.AsObject
 
   final case class Find[Filter, Sort, Projection](find: String,
                                                   filter: Option[Filter] = None,
