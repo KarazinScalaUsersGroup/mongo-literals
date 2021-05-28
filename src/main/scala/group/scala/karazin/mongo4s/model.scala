@@ -66,12 +66,12 @@ object model:
 
   final case class WriteConcern(w: Int, j: Boolean, wtimeout: Long) derives Codec.AsObject
 
-  final case class Insert[V](insert: String,
+  final case class Insert[V, Comment](insert: String,
                              documents: List[V],
                              ordered: Option[Boolean] = None,
                              writeConcern: Option[WriteConcern] = None,
                              bypassDocumentValidation: Option[Boolean] = None,
-                             comment: Option[String] = None) derives Codec.AsObject
+                             comment: Option[Comment] = None) derives Codec.AsObject
 
   object Update:
 
