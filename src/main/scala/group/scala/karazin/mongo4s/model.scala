@@ -172,7 +172,7 @@ object model:
     type Pipeline =
       AddFields[_] | Bucket[_, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
       GraphLookup[_] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
-      Match[_] | Merge | Out | PlanCacheStats | Project[_] | Reduct[_] | ReplaceRoot[_] | ReplaceWith[_] |
+      Match[_] | Merge | Out | PlanCacheStats | Project[_] | Redact[_] | ReplaceRoot[_] | ReplaceWith[_] |
       Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
     final case class AddFields[Document]($addFields: Document)
@@ -293,7 +293,7 @@ object model:
 
     final case class Project[Project]($project: Project)
 
-    final case class Reduct[Redact]($redact: Redact)
+    final case class Redact[Redact]($redact: Redact)
 
     object ReplaceRoot:
       final case class Command[NewRoot](newRoot: NewRoot)
