@@ -99,11 +99,11 @@ object model:
 
     type Limit = 0 | 1
 
-    final case class Delete[Q](q: Q,
-                               limit: Limit,
-                               collation: Option[Collation] = None,
-                               comment: Option[String] = None) derives Codec.AsObject
-
+    final case class Delete[Q, Hint](q: Q,
+                                     limit: Limit,
+                                     collation: Option[Collation] = None,
+                                     hint: Option[Hint] = None) derives Codec.AsObject
+    
   end Delete
   given Encoder[Delete.Limit] = value => value.toInt.asJson
   given Decoder[Delete.Limit] = new Decoder[Delete.Limit] {
@@ -113,12 +113,11 @@ object model:
       }
   }
 
-  import Delete.{given, _}
-
-  final case class Delete[Q](delete: String,
-                             deletes: List[Delete.Delete[Q]],
-                             ordered: Option[Boolean] = None,
-                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
+  final case class Delete[Q, Hint, Comment](delete: String,
+                                   deletes: List[Delete.Delete[Q, Hint]],
+                                   ordered: Option[Boolean] = None,
+                                   writeConcern: Option[WriteConcern] = None,
+                                   comment: Option[Comment] = None) derives Codec.AsObject
 
   final case class Find[Filter, Sort, Projection, Hint, Comment, Min, Max](find: String,
                                                   filter: Option[Filter] = None,
