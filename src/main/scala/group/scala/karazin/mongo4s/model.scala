@@ -170,7 +170,7 @@ object model:
 
     type Pipeline =
       AddFields[_] | Bucket[_, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
-      GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_, _] |
+      GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_] |
       Match[_] | Merge | Out | PlanCacheStats | Project[_] | Redact[_] | ReplaceRoot[_] | ReplaceWith[_] |
       Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
@@ -278,13 +278,13 @@ object model:
                                             foreignField: String,
                                             as: Option[String])
 
-      final case class JoinCommand[Let, Pipeline](from: String,
-                                                  let: Let,
-                                                  pipeline: Pipeline,
-                                                  as: String)
+      final case class JoinCommand[Let](from: String,
+                                        let: Let,
+                                        pipeline: List[Aggregate.Pipeline],
+                                        as: String)
     end Lookup
     final case class LookupEquality($lookup: Lookup.EqualityMatchCommand)
-    final case class LookupJoin[Let, Pipeline]($lookup: Lookup.JoinCommand[Let, Pipeline])
+    final case class LookupJoin[Let]($lookup: Lookup.JoinCommand[Let])
 
     final case class Match[Match]($match: Match)
 
