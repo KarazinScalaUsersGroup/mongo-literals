@@ -209,15 +209,25 @@ object model:
     final case class Facet[Document]($facet: Document)
 
     object GeoNear:
-      type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+      type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon | GeometryCollection
 
-      // Should be improved with builder
-      final case class Point(`type`: String = "Point", coordinates: List[Double])
-      final case class LineString(`type`: String = "LineString", coordinates: List[List[Double]])
-      final case class Polygon(`type`: String = "Polygon", coordinates: List[List[List[Double]]])
-      final case class MultiPoint(`type`: String = "MultiPoint", coordinates: List[List[Double]])
-      final case class MultiLineString(`type`: String = "MultiLineString", coordinates: List[List[Double]])
-      final case class MultiPolygon(`type`: String = "MultiPolygon", coordinates: List[List[List[List[Double]]]])
+      final case class Point private[mongo4s] (`type`: String, coordinates: List[Double])
+      final case class LineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class Polygon private[mongo4s] (`type`: String, coordinates: List[List[List[Double]]])
+      final case class MultiPoint private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class MultiLineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class MultiPolygon private[mongo4s] (`type`: String, coordinates: List[List[List[List[Double]]]])
+      final case class GeometryCollection private[mongo4s] (`type`: String, geometries: List[GeoJSON])
+
+      object GeoJSONBuilder {
+        def point(coordinates: List[Double]): Point = Point("Point", coordinates)
+        def lineString(coordinates: List[List[Double]]): LineString = LineString("LineString", coordinates)
+        def polygon(coordinates: List[List[List[Double]]]): Polygon = Polygon("Polygon", coordinates)
+        def multiPoint(coordinates: List[List[Double]]): MultiPoint = MultiPoint("MultiPoint", coordinates)
+        def multiLineString(coordinates: List[List[Double]]): MultiLineString = MultiLineString("MultiLineString", coordinates)
+        def multiPolygon(coordinates: List[List[List[List[Double]]]]): MultiPolygon = MultiPolygon("MultiPolygon", coordinates)
+        def geometryCollection(geometries: List[GeoJSON]): GeometryCollection = GeometryCollection("GeometryCollection", geometries)
+      }
 
       final case class Command[Query](near: GeoJSON,
                                       distanceField: String,
