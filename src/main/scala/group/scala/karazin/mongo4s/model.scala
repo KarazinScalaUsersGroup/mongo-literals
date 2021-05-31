@@ -66,43 +66,40 @@ object model:
 
   final case class WriteConcern(w: Int, j: Boolean, wtimeout: Long) derives Codec.AsObject
 
-  final case class Insert[V](insert: String,
+  final case class Insert[V, Comment](insert: String,
                              documents: List[V],
                              ordered: Option[Boolean] = None,
                              writeConcern: Option[WriteConcern] = None,
                              bypassDocumentValidation: Option[Boolean] = None,
-                             comment: Option[String] = None) derives Codec.AsObject
+                             comment: Option[Comment] = None) derives Codec.AsObject
 
   object Update:
 
-    final case class Update[Q, U](q: Q,
-                                  u: U,
-                                  upsert: Option[Boolean] = None,
-                                  multi: Option[Boolean] = None,
-                                  collation: Option[Collation] = None) derives Codec.AsObject
+    final case class Update[Q, U, ArrayFilters, Hint](q: Q,
+                                                      u: U,
+                                                      upsert: Option[Boolean] = None,
+                                                      multi: Option[Boolean] = None,
+                                                      collation: Option[Collation] = None,
+                                                      arrayFilters: Option[List[ArrayFilters]] = None,
+                                                      hint: Option[Hint] = None) derives Codec.AsObject
 
   end Update
 
-  final case class Update[Q, U](update: String,
-                                updates: List[Update.Update[Q, U]],
-                                ordered: Option[Boolean] = None,
-                                writeConcern: Option[WriteConcern] = None,
-                                bypassDocumentValidation: Option[Boolean] = None,
-                                comment: Option[String] = None) derives Codec.AsObject
-
-  final case class CustomUpdate[Q, U](update: String,
-                                      updates: List[Update.Update[Q, U]],
-                                      writeConcern: WriteConcern) derives Codec.AsObject
-
+  final case class Update[Q, U, ArrayFilters, Hint, Comment](update: String,
+                                                             updates: List[Update.Update[Q, U, ArrayFilters, Hint]],
+                                                             ordered: Option[Boolean] = None,
+                                                             writeConcern: Option[WriteConcern] = None,
+                                                             bypassDocumentValidation: Option[Boolean] = None,
+                                                             comment: Option[Comment] = None) derives Codec.AsObject
 
   object Delete:
 
     type Limit = 0 | 1
 
-    final case class Delete[Q](q: Q,
-                               limit: Limit,
-                               collation: Option[Collation] = None,
-                               comment: Option[String] = None) derives Codec.AsObject
+    final case class Delete[Q, Hint](q: Q,
+                                     limit: Limit,
+                                     collation: Option[Collation] = None,
+                                     hint: Option[Hint] = None) derives Codec.AsObject
 
   end Delete
   given Encoder[Delete.Limit] = value => value.toInt.asJson
@@ -113,24 +110,26 @@ object model:
       }
   }
 
-  import Delete.{given, _}
+  final case class Delete[Q, Hint, Comment](delete: String,
+                                   deletes: List[Delete.Delete[Q, Hint]],
+                                   ordered: Option[Boolean] = None,
+                                   writeConcern: Option[WriteConcern] = None,
+                                   comment: Option[Comment] = None) derives Codec.AsObject
 
-  final case class Delete[Q](delete: String,
-                             deletes: List[Delete.Delete[Q]],
-                             ordered: Option[Boolean] = None,
-                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
-
-  final case class Find[Filter, Sort, Projection](find: String,
+  final case class Find[Filter, Sort, Projection, Hint, Comment, Min, Max](find: String,
                                                   filter: Option[Filter] = None,
                                                   sort: Option[Sort] = None,
                                                   projection: Option[Projection] = None,
+                                                  hint: Option[Hint] = None,
                                                   skip: Option[Int] = None,
                                                   limit: Option[Int] = None,
                                                   batchSize: Option[Int] = None,
                                                   singleBatch: Option[Boolean] = None,
-                                                  comment: Option[String] = None,
+                                                  comment: Option[Comment] = None,
                                                   maxTimeMS: Option[Int] = None,
                                                   readConcern: Option[ReadConcern] = None,
+                                                  max: Option[Max] = None,
+                                                  min: Option[Min] = None,
                                                   returnKey: Option[Boolean] = None,
                                                   showRecordId: Option[Boolean] = None,
                                                   tailable: Option[Boolean] = None,
@@ -141,7 +140,7 @@ object model:
                                                   collation: Option[Collation] = None,
                                                   allowDiskUse: Option[Boolean] = None) derives Codec.AsObject
 
-  final case class FindAndModify[Query, Sort, Update, Fields](findAndModify: String,
+  final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint, Comment](findAndModify: String,
                                                               query: Option[Query] = None,
                                                               sort: Option[Sort] = None,
                                                               remove: Option[Boolean] = None,
@@ -151,8 +150,11 @@ object model:
                                                               upsert: Option[Boolean] = None,
                                                               bypassDocumentValidation: Option[Boolean] = None,
                                                               writeConcern: Option[WriteConcern] = None,
+                                                              maxTimeMS: Option[Long] = None,
                                                               collation: Option[Collation] = None,
-                                                              comment: Option[String] = None) derives Codec.AsObject
+                                                              arrayFilters: Option[List[ArrayFilters]] = None,
+                                                              hint: Option[Hint] = None,
+                                                              comment: Option[Comment] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
@@ -192,10 +194,11 @@ object model:
 
     object CollStats:
       final case class LatencyStats(histograms: Boolean)
+      final case class StorageStats(scale: Int)
 
       // Should be rewritten with a builder
       final case class Command(latencyStats: Option[LatencyStats],
-                               storageStats: Option[EmptyObject],
+                               storageStats: Option[EmptyObject | StorageStats],
                                count: Option[EmptyObject],
                                queryExecStats: Option[EmptyObject])
     end CollStats
@@ -206,15 +209,25 @@ object model:
     final case class Facet[Document]($facet: Document)
 
     object GeoNear:
-      type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon
+      type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon | GeometryCollection
 
-      // Should be improved with builder
-      final case class Point(`type`: String = "Point", coordinates: List[Double])
-      final case class LineString(`type`: String = "LineString", coordinates: List[List[Double]])
-      final case class Polygon(`type`: String = "Polygon", coordinates: List[List[List[Double]]])
-      final case class MultiPoint(`type`: String = "MultiPoint", coordinates: List[List[Double]])
-      final case class MultiLineString(`type`: String = "MultiLineString", coordinates: List[List[Double]])
-      final case class MultiPolygon(`type`: String = "MultiPolygon", coordinates: List[List[List[List[Double]]]])
+      final case class Point private[mongo4s] (`type`: String, coordinates: List[Double])
+      final case class LineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class Polygon private[mongo4s] (`type`: String, coordinates: List[List[List[Double]]])
+      final case class MultiPoint private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class MultiLineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
+      final case class MultiPolygon private[mongo4s] (`type`: String, coordinates: List[List[List[List[Double]]]])
+      final case class GeometryCollection private[mongo4s] (`type`: String, geometries: List[GeoJSON])
+
+      object GeoJSONBuilder {
+        def point(coordinates: List[Double]): Point = Point("Point", coordinates)
+        def lineString(coordinates: List[List[Double]]): LineString = LineString("LineString", coordinates)
+        def polygon(coordinates: List[List[List[Double]]]): Polygon = Polygon("Polygon", coordinates)
+        def multiPoint(coordinates: List[List[Double]]): MultiPoint = MultiPoint("MultiPoint", coordinates)
+        def multiLineString(coordinates: List[List[Double]]): MultiLineString = MultiLineString("MultiLineString", coordinates)
+        def multiPolygon(coordinates: List[List[List[List[Double]]]]): MultiPolygon = MultiPolygon("MultiPolygon", coordinates)
+        def geometryCollection(geometries: List[GeoJSON]): GeometryCollection = GeometryCollection("GeometryCollection", geometries)
+      }
 
       final case class Command[Query](near: GeoJSON,
                                       distanceField: String,
@@ -249,10 +262,13 @@ object model:
     final case class Limit($limit: Int)
 
     object ListSessions:
-      final case class User(user: String, db: String)
 
-      final case class Command(users: Option[List[User]],
-                               allUsers: Option[Boolean])
+      type Command = EmptyObject | Users | AllUsers
+
+      final case class User(user: String, db: String)
+      final case class Users(users: List[User])
+      final case class AllUsers(allUsers: Boolean)
+
     end ListSessions
     final case class ListSessions($listSessions: ListSessions.Command)
 
@@ -291,7 +307,7 @@ object model:
 
     final case class Project[Project]($project: Project)
 
-    final case class Reduct[Redact]($redact: Redact)
+    final case class Redact[Redact]($redact: Redact)
 
     object ReplaceRoot:
       final case class Command[NewRoot](newRoot: NewRoot)
