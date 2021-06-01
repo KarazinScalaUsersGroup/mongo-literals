@@ -187,7 +187,7 @@ object model:
     object BucketAuto:
       final case class Command[GroupBy, Output](groupBy: GroupBy,
                                                 buckets: Int,
-                                                output: List[Output],
+                                                output: Option[Output],
                                                 granularity: Option[String])
     end BucketAuto
     final case class BucketAuto[GroupBy, Output]($bucketAuto: BucketAuto.Command[GroupBy, Output])
@@ -289,8 +289,9 @@ object model:
     final case class Match[Match]($match: Match)
 
     object Merge:
-      final case class Command(into: String,
-                               on: Option[String],
+      final case class MergeInDb(db: String, coll: String)
+      final case class Command(into: String | MergeInDb,
+                               on: Option[String | List[String]],
                                let: Option[String],
                                whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | "pipeline"],
                                whenNotMatched: Option["insert" | "discard" | "fail"])
