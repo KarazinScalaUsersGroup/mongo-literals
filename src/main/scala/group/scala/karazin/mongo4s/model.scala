@@ -51,16 +51,46 @@ object model:
                              normalization: Option[Boolean]) derives Codec.AsObject
 
   object ReadConcern:
-    type Level = "local" | "available" | "majority" | "linearizable" | "snapshot"
-  end ReadConcern
-  given Encoder[ReadConcern.Level] = value => value.toString.asJson
-  given Decoder[ReadConcern.Level] = new Decoder[ReadConcern.Level] {
+
+    sealed trait Level:
+      val value: String
+
+    object Local extends Level:
+      val value: String = "local"
+
+    object Available extends Level:
+      val value: String = "available"
+
+    object Majority extends Level:
+      val value: String = "majority"
+
+    object Linearizable extends Level:
+      val value: String = "linearizable"
+
+    object Snapshot extends Level:
+      val value: String = "snapshot"
+
+    given Encoder[ReadConcern.Level] = value => value.toString.asJson
+    given Decoder[ReadConcern.Level] = new Decoder[ReadConcern.Level] {
     def apply(c: HCursor): Decoder.Result[ReadConcern.Level] =
       c.as[String] map {
-        case result @ ("local" | "available" | "majority" | "linearizable" | "snapshot") =>
-          result.asInstanceOf[ReadConcern.Level]
+        case "local"        => Local
+        case "available"    => Available
+        case "majority"     => Majority
+        case "linearizable" => Linearizable
+        case "snapshot"     => Snapshot
       }
   }
+
+  end ReadConcern
+//  given Encoder[ReadConcern.Level] = value => value.toString.asJson
+//  given Decoder[ReadConcern.Level] = new Decoder[ReadConcern.Level] {
+//    def apply(c: HCursor): Decoder.Result[ReadConcern.Level] =
+//      c.as[String] map {
+//        case result @ ("local" | "available" | "majority" | "linearizable" | "snapshot") =>
+//          result.asInstanceOf[ReadConcern.Level]
+//      }
+//  }
 
   final case class ReadConcern(level: ReadConcern.Level) derives Codec.AsObject
 
