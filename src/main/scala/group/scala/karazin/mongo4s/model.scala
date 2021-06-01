@@ -168,11 +168,11 @@ object model:
 
     final case class Cursor(batchSize: Option[Int] = None) derives Codec.AsObject
 
-    type Pipeline =
+    type PipelineStage =
       AddFields[_] | Bucket[_, _, _, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
       GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_] |
       Match[_] | Merge | Out | PlanCacheStats | Project[_] | Redact[_] | ReplaceRoot[_] | ReplaceWith[_] |
-      Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
+      Sort[_] | SortByCount[_] | UnionWith | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
     final case class AddFields[Document]($addFields: Document)
 
@@ -283,7 +283,7 @@ object model:
 
       final case class JoinCommand[Let](from: String,
                                         let: Let,
-                                        pipeline: List[Aggregate.Pipeline],
+                                        pipeline: List[Aggregate.PipelineStage],
                                         as: String)
     end Lookup
     final case class LookupEquality($lookup: Lookup.EqualityMatchCommand)
@@ -339,10 +339,11 @@ object model:
     final case class SortByCount[SortByCount]($sortByCount: SortByCount)
 
     object UnionWith:
-      type Command[Pipeline] = UnionWithCommand[Pipeline] | String
-      final case class UnionWithCommand[Pipeline](coll: String, pipeline: Pipeline)
+      type Command = UnionWithCommand | String
+      /** WARN!!! `pipeline` cannot include the $out and $merge stages */
+      final case class UnionWithCommand(coll: String, pipeline: Option[List[Aggregate.PipelineStage]])
     end UnionWith
-    final case class UnionWith[Pipeline]($unionWith: UnionWith.Command[Pipeline])
+    final case class UnionWith($unionWith: UnionWith.Command)
 
     object Unset:
       type Command = List[String] | String
@@ -360,7 +361,7 @@ object model:
 
   end Aggregate
   final case class Aggregate(aggregate: String,
-                             pipeline: List[Aggregate.Pipeline],
+                             pipeline: List[Aggregate.PipelineStage],
                              explain: Option[Boolean] = None,
                              allowDiskUse: Option[Boolean] = None,
                              cursor: Option[Aggregate.Cursor],
