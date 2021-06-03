@@ -64,7 +64,7 @@ object model:
 
   final case class ReadConcern(level: ReadConcern.Level) derives Codec.AsObject
 
-  final case class WriteConcern(w: Int, j: Boolean, wtimeout: Long) derives Codec.AsObject
+  final case class WriteConcern(w: Int | String, j: Boolean, wtimeout: Long) derives Codec.AsObject
 
   final case class Insert[V, Comment](insert: String,
                              documents: List[V],
