@@ -71,7 +71,7 @@ object model:
                              ordered: Option[Boolean] = None,
                              writeConcern: Option[WriteConcern] = None,
                              bypassDocumentValidation: Option[Boolean] = None,
-                             comment: Option[JsonObject] = None) derives Codec.AsObject
+                             comment: Option[Json] = None) derives Codec.AsObject
 
   object Update:
 
@@ -90,7 +90,7 @@ object model:
                                                              ordered: Option[Boolean] = None,
                                                              writeConcern: Option[WriteConcern] = None,
                                                              bypassDocumentValidation: Option[Boolean] = None,
-                                                             comment: Option[JsonObject] = None) derives Codec.AsObject
+                                                             comment: Option[Json] = None) derives Codec.AsObject
 
   object Delete:
 
@@ -114,7 +114,7 @@ object model:
                                    deletes: List[Delete.Delete[Q, Hint]],
                                    ordered: Option[Boolean] = None,
                                    writeConcern: Option[WriteConcern] = None,
-                                   comment: Option[JsonObject] = None) derives Codec.AsObject
+                                   comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Find[Filter, Sort, Projection, Hint, Min, Max](find: String,
                                                   filter: Option[Filter] = None,
@@ -125,7 +125,7 @@ object model:
                                                   limit: Option[Int] = None,
                                                   batchSize: Option[Int] = None,
                                                   singleBatch: Option[Boolean] = None,
-                                                  comment: Option[JsonObject] = None,
+                                                  comment: Option[Json] = None,
                                                   maxTimeMS: Option[Int] = None,
                                                   readConcern: Option[ReadConcern] = None,
                                                   max: Option[Max] = None,
@@ -154,7 +154,7 @@ object model:
                                                               collation: Option[Collation] = None,
                                                               arrayFilters: Option[List[ArrayFilters]] = None,
                                                               hint: Option[Hint] = None,
-                                                              comment: Option[JsonObject] = None) derives Codec.AsObject
+                                                              comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
@@ -162,7 +162,7 @@ object model:
                                 skip: Option[Int] = None,
                                 readConcern: Option[ReadConcern] = None,
                                 collation: Option[Collation] = None,
-                                comment: Option[JsonObject] = None) derives Codec.AsObject
+                                comment: Option[Json] = None) derives Codec.AsObject
 
   object Aggregate:
 
@@ -368,5 +368,5 @@ object model:
                              bypassDocumentValidation: Option[Boolean] = None,
                              readConcern: Option[ReadConcern] = None,
                              collation: Option[Collation] = None,
-                             comment: Option[JsonObject] = None,
+                             comment: Option[Json] = None,
                              writeConcern: Option[WriteConcern] = None) /*derives Codec.AsObject TODO: Should be fixed*/
