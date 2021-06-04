@@ -11,7 +11,7 @@ object CirceEncoders:
       case v: Int ⇒ v.toInt.asJson
       case v: String ⇒ v.toString.asJson
 
-  given Decoder[Int | String] = new Decoder[Int | String] {
+  given intOrStringDecoder: Decoder[Int | String] = new Decoder[Int | String] {
     def apply(c: HCursor): Decoder.Result[Int | String] = {
       c.focus match
         case Some(json) if json.isNumber && json.asNumber.get.toInt.isDefined ⇒ json.as[Int]
