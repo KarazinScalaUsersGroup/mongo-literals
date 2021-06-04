@@ -8,6 +8,8 @@ import io.circe.syntax._
 import io.circe._
 import cats.data.NonEmptyList
 
+import CirceEncoders.given
+
 object model:
 
   type EmptyObject = EmptyTuple
@@ -363,4 +365,4 @@ object model:
                              readConcern: Option[ReadConcern] = None,
                              collation: Option[Collation] = None,
                              comment: Option[Json] = None,
-                             writeConcern: Option[WriteConcern] = None) /*derives Codec.AsObject TODO: Should be fixed*/
+                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
