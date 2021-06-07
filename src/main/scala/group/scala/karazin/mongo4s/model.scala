@@ -8,6 +8,8 @@ import io.circe.syntax._
 import io.circe._
 import cats.data.NonEmptyList
 
+import CirceEncoders.given
+
 object model:
 
   type EmptyObject = EmptyTuple
@@ -168,12 +170,6 @@ object model:
 
     final case class Cursor(batchSize: Option[Int] = None) derives Codec.AsObject
 
-    type Pipeline =
-      AddFields[_] | Bucket[_, _, _, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
-      GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_] |
-      Match[_] | Merge | Out | PlanCacheStats | Project[_] | Redact[_] | ReplaceRoot[_] | ReplaceWith[_] |
-      Sort[_] | SortByCount[_] | UnionWith[_] | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
-
     final case class AddFields[Document]($addFields: Document)
 
     object Bucket:
@@ -281,13 +277,13 @@ object model:
                                             foreignField: String,
                                             as: Option[String])
 
-      final case class JoinCommand[Let](from: String,
-                                        let: Let,
-                                        pipeline: List[Aggregate.Pipeline],
+      final case class JoinCommand[Let, Pipeline](from: String,
+                                        let: Option[Let],
+                                        pipeline: List[Pipeline],
                                         as: String)
     end Lookup
     final case class LookupEquality($lookup: Lookup.EqualityMatchCommand)
-    final case class LookupJoin[Let]($lookup: Lookup.JoinCommand[Let])
+    final case class LookupJoin[Let, Pipeline]($lookup: Lookup.JoinCommand[Let, Pipeline])
 
     final case class Match[Match]($match: Match)
 
@@ -359,8 +355,8 @@ object model:
     final case class Unwind($unwind: Unwind.Command)
 
   end Aggregate
-  final case class Aggregate(aggregate: String,
-                             pipeline: List[Aggregate.Pipeline],
+  final case class Aggregate[Pipeline](aggregate: String,
+                             pipeline: List[Pipeline],
                              explain: Option[Boolean] = None,
                              allowDiskUse: Option[Boolean] = None,
                              cursor: Option[Aggregate.Cursor],
@@ -369,4 +365,4 @@ object model:
                              readConcern: Option[ReadConcern] = None,
                              collation: Option[Collation] = None,
                              comment: Option[Json] = None,
-                             writeConcern: Option[WriteConcern] = None) /*derives Codec.AsObject TODO: Should be fixed*/
+                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
