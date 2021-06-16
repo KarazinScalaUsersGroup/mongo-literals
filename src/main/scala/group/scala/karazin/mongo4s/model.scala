@@ -8,6 +8,8 @@ import io.circe.syntax._
 import io.circe._
 import cats.data.NonEmptyList
 
+import CirceEncoders.given
+
 object model:
 
   type EmptyObject = EmptyTuple
@@ -64,14 +66,14 @@ object model:
 
   final case class ReadConcern(level: ReadConcern.Level) derives Codec.AsObject
 
-  final case class WriteConcern(w: Int, j: Boolean, wtimeout: Long) derives Codec.AsObject
+  final case class WriteConcern(w: Int | String, j: Boolean, wtimeout: Long) derives Codec.AsObject
 
-  final case class Insert[V, Comment](insert: String,
+  final case class Insert[V](insert: String,
                              documents: List[V],
                              ordered: Option[Boolean] = None,
                              writeConcern: Option[WriteConcern] = None,
                              bypassDocumentValidation: Option[Boolean] = None,
-                             comment: Option[Comment] = None) derives Codec.AsObject
+                             comment: Option[Json] = None) derives Codec.AsObject
 
   object Update:
 
@@ -85,12 +87,12 @@ object model:
 
   end Update
 
-  final case class Update[Q, U, ArrayFilters, Hint, Comment](update: String,
+  final case class Update[Q, U, ArrayFilters, Hint](update: String,
                                                              updates: List[Update.Update[Q, U, ArrayFilters, Hint]],
                                                              ordered: Option[Boolean] = None,
                                                              writeConcern: Option[WriteConcern] = None,
                                                              bypassDocumentValidation: Option[Boolean] = None,
-                                                             comment: Option[Comment] = None) derives Codec.AsObject
+                                                             comment: Option[Json] = None) derives Codec.AsObject
 
   object Delete:
 
@@ -110,13 +112,13 @@ object model:
       }
   }
 
-  final case class Delete[Q, Hint, Comment](delete: String,
+  final case class Delete[Q, Hint](delete: String,
                                    deletes: List[Delete.Delete[Q, Hint]],
                                    ordered: Option[Boolean] = None,
                                    writeConcern: Option[WriteConcern] = None,
-                                   comment: Option[Comment] = None) derives Codec.AsObject
+                                   comment: Option[Json] = None) derives Codec.AsObject
 
-  final case class Find[Filter, Sort, Projection, Hint, Comment, Min, Max](find: String,
+  final case class Find[Filter, Sort, Projection, Hint, Min, Max](find: String,
                                                   filter: Option[Filter] = None,
                                                   sort: Option[Sort] = None,
                                                   projection: Option[Projection] = None,
@@ -125,7 +127,7 @@ object model:
                                                   limit: Option[Int] = None,
                                                   batchSize: Option[Int] = None,
                                                   singleBatch: Option[Boolean] = None,
-                                                  comment: Option[Comment] = None,
+                                                  comment: Option[Json] = None,
                                                   maxTimeMS: Option[Int] = None,
                                                   readConcern: Option[ReadConcern] = None,
                                                   max: Option[Max] = None,
@@ -140,7 +142,7 @@ object model:
                                                   collation: Option[Collation] = None,
                                                   allowDiskUse: Option[Boolean] = None) derives Codec.AsObject
 
-  final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint, Comment](findAndModify: String,
+  final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint](findAndModify: String,
                                                               query: Option[Query] = None,
                                                               sort: Option[Sort] = None,
                                                               remove: Option[Boolean] = None,
@@ -154,7 +156,7 @@ object model:
                                                               collation: Option[Collation] = None,
                                                               arrayFilters: Option[List[ArrayFilters]] = None,
                                                               hint: Option[Hint] = None,
-                                                              comment: Option[Comment] = None) derives Codec.AsObject
+                                                              comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
@@ -162,17 +164,11 @@ object model:
                                 skip: Option[Int] = None,
                                 readConcern: Option[ReadConcern] = None,
                                 collation: Option[Collation] = None,
-                                comment: Option[String] = None) derives Codec.AsObject
+                                comment: Option[Json] = None) derives Codec.AsObject
 
   object Aggregate:
 
     final case class Cursor(batchSize: Option[Int] = None) derives Codec.AsObject
-
-    type PipelineStage =
-      AddFields[_] | Bucket[_, _, _, _] | BucketAuto[_, _] | CollStats | Count | Facet[_] | GeoNear[_] |
-      GraphLookup[_, _] | Group[_] | IndexStats | Limit | ListSessions | LookupEquality | LookupJoin[_] |
-      Match[_] | Merge | Out | PlanCacheStats | Project[_] | Redact[_] | ReplaceRoot[_] | ReplaceWith[_] |
-      Sort[_] | SortByCount[_] | UnionWith | Unset | Unwind | Sample | Search[_] | Set[_] | Skip
 
     final case class AddFields[Document]($addFields: Document)
 
@@ -281,13 +277,13 @@ object model:
                                             foreignField: String,
                                             as: Option[String])
 
-      final case class JoinCommand[Let](from: String,
-                                        let: Let,
-                                        pipeline: List[Aggregate.PipelineStage],
+      final case class JoinCommand[Let, Pipeline](from: String,
+                                        let: Option[Let],
+                                        pipeline: List[Pipeline],
                                         as: String)
     end Lookup
     final case class LookupEquality($lookup: Lookup.EqualityMatchCommand)
-    final case class LookupJoin[Let]($lookup: Lookup.JoinCommand[Let])
+    final case class LookupJoin[Let, Pipeline]($lookup: Lookup.JoinCommand[Let, Pipeline])
 
     final case class Match[Match]($match: Match)
 
@@ -339,11 +335,10 @@ object model:
     final case class SortByCount[SortByCount]($sortByCount: SortByCount)
 
     object UnionWith:
-      type Command = UnionWithCommand | String
-      /** WARN!!! `pipeline` cannot include the $out and $merge stages */
-      final case class UnionWithCommand(coll: String, pipeline: Option[List[Aggregate.PipelineStage]])
+      type Command[Pipeline] = UnionWithCommand[Pipeline] | String
+      final case class UnionWithCommand[Pipeline](coll: String, pipeline: Pipeline)
     end UnionWith
-    final case class UnionWith($unionWith: UnionWith.Command)
+    final case class UnionWith[Pipeline]($unionWith: UnionWith.Command[Pipeline])
 
     object Unset:
       type Command = List[String] | String
@@ -360,8 +355,8 @@ object model:
     final case class Unwind($unwind: Unwind.Command)
 
   end Aggregate
-  final case class Aggregate(aggregate: String,
-                             pipeline: List[Aggregate.PipelineStage],
+  final case class Aggregate[Pipeline](aggregate: String,
+                             pipeline: List[Pipeline],
                              explain: Option[Boolean] = None,
                              allowDiskUse: Option[Boolean] = None,
                              cursor: Option[Aggregate.Cursor],
@@ -369,5 +364,5 @@ object model:
                              bypassDocumentValidation: Option[Boolean] = None,
                              readConcern: Option[ReadConcern] = None,
                              collation: Option[Collation] = None,
-                             comment: Option[String] = None,
-                             writeConcern: Option[WriteConcern] = None) /*derives Codec.AsObject TODO: Should be fixed*/
+                             comment: Option[Json] = None,
+                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject
