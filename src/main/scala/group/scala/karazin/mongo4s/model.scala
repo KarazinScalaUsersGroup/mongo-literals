@@ -288,14 +288,14 @@ object model:
     final case class Match[Match]($match: Match)
 
     object Merge:
-      final case class MergeInDb(db: String, coll: String)
-      final case class Command(into: String | MergeInDb,
-                               on: Option[String | List[String]],
-                               let: Option[String],
-                               whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | "pipeline"],
-                               whenNotMatched: Option["insert" | "discard" | "fail"])
+      final case class Database(db: String, coll: String)
+      final case class Command[Let, Pipeline](into: String | Database,
+                                    on: Option[String | List[String]],
+                                    let: Option[Let],
+                                    whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | List[Pipeline]],
+                                    whenNotMatched: Option["insert" | "discard" | "fail"])
     end Merge
-    final case class Merge($merge: Merge.Command)
+    final case class Merge[Let, Pipeline]($merge: Merge.Command[Let, Pipeline])
 
     object Out:
       type Command = Out | String
