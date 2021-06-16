@@ -336,7 +336,8 @@ object model:
 
     object UnionWith:
       type Command[Pipeline] = UnionWithCommand[Pipeline] | String
-      final case class UnionWithCommand[Pipeline](coll: String, pipeline: Pipeline)
+      /** WARN!!! `pipeline` cannot include the $out and $merge stages */
+      final case class UnionWithCommand[Pipeline](coll: String, pipeline: Option[List[Pipeline]])
     end UnionWith
     final case class UnionWith[Pipeline]($unionWith: UnionWith.Command[Pipeline])
 
