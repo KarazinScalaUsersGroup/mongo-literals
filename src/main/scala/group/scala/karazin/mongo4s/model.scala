@@ -1,14 +1,14 @@
 package group.scala.karazin.mongo4s
 
+import cats.data.NonEmptyList
 import io.circe.Json
 import io.circe.JsonObject
 import io.circe.Encoder
 import io.circe.Codec
 import io.circe.syntax._
 import io.circe._
-import cats.data.NonEmptyList
 
-import CirceEncoders.given
+import group.scala.karazin.mongo4s.coders.given
 
 object model:
 
@@ -119,44 +119,44 @@ object model:
                                    comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Find[Filter, Sort, Projection, Hint, Min, Max](find: String,
-                                                  filter: Option[Filter] = None,
-                                                  sort: Option[Sort] = None,
-                                                  projection: Option[Projection] = None,
-                                                  hint: Option[Hint] = None,
-                                                  skip: Option[Int] = None,
-                                                  limit: Option[Int] = None,
-                                                  batchSize: Option[Int] = None,
-                                                  singleBatch: Option[Boolean] = None,
-                                                  comment: Option[Json] = None,
-                                                  maxTimeMS: Option[Int] = None,
-                                                  readConcern: Option[ReadConcern] = None,
-                                                  max: Option[Max] = None,
-                                                  min: Option[Min] = None,
-                                                  returnKey: Option[Boolean] = None,
-                                                  showRecordId: Option[Boolean] = None,
-                                                  tailable: Option[Boolean] = None,
-                                                  oplogReplay: Option[Boolean] = None,
-                                                  noCursorTimeout: Option[Boolean] = None,
-                                                  awaitData: Option[Boolean] = None,
-                                                  allowPartialResults: Option[Boolean] = None,
-                                                  collation: Option[Collation] = None,
-                                                  allowDiskUse: Option[Boolean] = None) derives Codec.AsObject
+                                                                  filter: Option[Filter] = None,
+                                                                  sort: Option[Sort] = None,
+                                                                  projection: Option[Projection] = None,
+                                                                  hint: Option[Hint] = None,
+                                                                  skip: Option[Int] = None,
+                                                                  limit: Option[Int] = None,
+                                                                  batchSize: Option[Int] = None,
+                                                                  singleBatch: Option[Boolean] = None,
+                                                                  comment: Option[Json] = None,
+                                                                  maxTimeMS: Option[Int] = None,
+                                                                  readConcern: Option[ReadConcern] = None,
+                                                                  max: Option[Max] = None,
+                                                                  min: Option[Min] = None,
+                                                                  returnKey: Option[Boolean] = None,
+                                                                  showRecordId: Option[Boolean] = None,
+                                                                  tailable: Option[Boolean] = None,
+                                                                  oplogReplay: Option[Boolean] = None,
+                                                                  noCursorTimeout: Option[Boolean] = None,
+                                                                  awaitData: Option[Boolean] = None,
+                                                                  allowPartialResults: Option[Boolean] = None,
+                                                                  collation: Option[Collation] = None,
+                                                                  allowDiskUse: Option[Boolean] = None) derives Codec.AsObject
 
   final case class FindAndModify[Query, Sort, Update, Fields, ArrayFilters, Hint](findAndModify: String,
-                                                              query: Option[Query] = None,
-                                                              sort: Option[Sort] = None,
-                                                              remove: Option[Boolean] = None,
-                                                              update: Option[Update] = None,
-                                                              `new`: Option[Boolean] = None,
-                                                              fields: Option[Fields] = None,
-                                                              upsert: Option[Boolean] = None,
-                                                              bypassDocumentValidation: Option[Boolean] = None,
-                                                              writeConcern: Option[WriteConcern] = None,
-                                                              maxTimeMS: Option[Long] = None,
-                                                              collation: Option[Collation] = None,
-                                                              arrayFilters: Option[List[ArrayFilters]] = None,
-                                                              hint: Option[Hint] = None,
-                                                              comment: Option[Json] = None) derives Codec.AsObject
+                                                                                  query: Option[Query] = None,
+                                                                                  sort: Option[Sort] = None,
+                                                                                  remove: Option[Boolean] = None,
+                                                                                  update: Option[Update] = None,
+                                                                                  `new`: Option[Boolean] = None,
+                                                                                  fields: Option[Fields] = None,
+                                                                                  upsert: Option[Boolean] = None,
+                                                                                  bypassDocumentValidation: Option[Boolean] = None,
+                                                                                  writeConcern: Option[WriteConcern] = None,
+                                                                                  maxTimeMS: Option[Long] = None,
+                                                                                  collation: Option[Collation] = None,
+                                                                                  arrayFilters: Option[List[ArrayFilters]] = None,
+                                                                                  hint: Option[Hint] = None,
+                                                                                  comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Count[Query](count: String,
                                 query: Query,
@@ -165,204 +165,3 @@ object model:
                                 readConcern: Option[ReadConcern] = None,
                                 collation: Option[Collation] = None,
                                 comment: Option[Json] = None) derives Codec.AsObject
-
-  object Aggregate:
-
-    final case class Cursor(batchSize: Option[Int] = None) derives Codec.AsObject
-
-    final case class AddFields[Document]($addFields: Document)
-
-    object Bucket:
-      final case class Command[GroupBy, Default, Boundary, Output](groupBy: GroupBy,
-                                                                   boundaries: List[Boundary],
-                                                                   default: Option[Default],
-                                                                   output: Option[Output])
-    end Bucket
-    final case class Bucket[GroupBy, Default, Boundary, Output]($bucket:
-                                                                Bucket.Command[GroupBy, Default, Boundary, Output]
-                                                               )
-
-
-    object BucketAuto:
-      final case class Command[GroupBy, Output](groupBy: GroupBy,
-                                                buckets: Int,
-                                                output: Option[Output],
-                                                granularity: Option[String])
-    end BucketAuto
-    final case class BucketAuto[GroupBy, Output]($bucketAuto: BucketAuto.Command[GroupBy, Output])
-
-    object CollStats:
-      final case class LatencyStats(histograms: Boolean)
-      final case class StorageStats(scale: Int)
-
-      // Should be rewritten with a builder
-      final case class Command(latencyStats: Option[LatencyStats],
-                               storageStats: Option[EmptyObject | StorageStats],
-                               count: Option[EmptyObject],
-                               queryExecStats: Option[EmptyObject])
-    end CollStats
-    final case class CollStats($collStats: CollStats.Command)
-
-    final case class Count($count: String)
-
-    final case class Facet[Document]($facet: Document)
-
-    object GeoNear:
-      type GeoJSON = Point | LineString | Polygon | MultiPoint | MultiLineString | MultiPolygon | GeometryCollection
-
-      final case class Point private[mongo4s] (`type`: String, coordinates: List[Double])
-      final case class LineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
-      final case class Polygon private[mongo4s] (`type`: String, coordinates: List[List[List[Double]]])
-      final case class MultiPoint private[mongo4s] (`type`: String, coordinates: List[List[Double]])
-      final case class MultiLineString private[mongo4s] (`type`: String, coordinates: List[List[Double]])
-      final case class MultiPolygon private[mongo4s] (`type`: String, coordinates: List[List[List[List[Double]]]])
-      final case class GeometryCollection private[mongo4s] (`type`: String, geometries: List[GeoJSON])
-
-      object GeoJSONBuilder {
-        def point(coordinates: List[Double]): Point = Point("Point", coordinates)
-        def lineString(coordinates: List[List[Double]]): LineString = LineString("LineString", coordinates)
-        def polygon(coordinates: List[List[List[Double]]]): Polygon = Polygon("Polygon", coordinates)
-        def multiPoint(coordinates: List[List[Double]]): MultiPoint = MultiPoint("MultiPoint", coordinates)
-        def multiLineString(coordinates: List[List[Double]]): MultiLineString = MultiLineString("MultiLineString", coordinates)
-        def multiPolygon(coordinates: List[List[List[List[Double]]]]): MultiPolygon = MultiPolygon("MultiPolygon", coordinates)
-        def geometryCollection(geometries: List[GeoJSON]): GeometryCollection = GeometryCollection("GeometryCollection", geometries)
-      }
-
-      final case class Command[Query](near: GeoJSON,
-                                      distanceField: String,
-                                      spherical: Option[Boolean],
-                                      maxDistance: Option[Double],
-                                      query: Option[Query],
-                                      distanceMultiplier: Option[Double],
-                                      includeLocs: Option[String],
-                                      uniqueDocs: Option[Boolean],
-                                      minDistance: Option[Double],
-                                      key: Option[String])
-    end GeoNear
-    final case class GeoNear[Query]($geoNear: GeoNear.Command[Query])
-
-    object GraphLookup:
-      final case class Command[StartWithExpr, RestrictSearchWithMatch](from: String,
-                                                        startWith: StartWithExpr,
-                                                        connectFromField: String,
-                                                        connectToField: String,
-                                                        as: String,
-                                                        maxDepth: Option[Int],
-                                                        depthField: Option[String],
-                                                        restrictSearchWithMatch: Option[RestrictSearchWithMatch])
-    end GraphLookup
-    final case class GraphLookup[StartWithExpr, RestrictSearchWithMatch]
-    ($graphLookup: GraphLookup.Command[StartWithExpr, RestrictSearchWithMatch])
-
-    final case class Group[Group]($group: Group)
-
-    final case class IndexStats($indexStats: EmptyObject)
-
-    final case class Limit($limit: Int)
-
-    object ListSessions:
-
-      type Command = EmptyObject | Users | AllUsers
-
-      final case class User(user: String, db: String)
-      final case class Users(users: List[User])
-      final case class AllUsers(allUsers: Boolean)
-
-    end ListSessions
-    final case class ListSessions($listSessions: ListSessions.Command)
-
-    object Lookup:
-      final case class EqualityMatchCommand(from: String,
-                                            localField: String,
-                                            foreignField: String,
-                                            as: Option[String])
-
-      final case class JoinCommand[Let, Pipeline](from: String,
-                                        let: Option[Let],
-                                        pipeline: List[Pipeline],
-                                        as: String)
-    end Lookup
-    final case class LookupEquality($lookup: Lookup.EqualityMatchCommand)
-    final case class LookupJoin[Let, Pipeline]($lookup: Lookup.JoinCommand[Let, Pipeline])
-
-    final case class Match[Match]($match: Match)
-
-    object Merge:
-      final case class Database(db: String, coll: String)
-      final case class Command[Let, Pipeline](into: String | Database,
-                                    on: Option[String | List[String]],
-                                    let: Option[Let],
-                                    whenMatched: Option["replace" | "keepExisting" | "merge" | "fail" | List[Pipeline]],
-                                    whenNotMatched: Option["insert" | "discard" | "fail"])
-    end Merge
-    final case class Merge[Let, Pipeline]($merge: Merge.Command[Let, Pipeline])
-
-    object Out:
-      type Command = Out | String
-      final case class Out(db: String, coll: String)
-    end Out
-    final case class Out($out: Out.Command)
-
-    final case class PlanCacheStats($planCacheStats: EmptyObject)
-
-    final case class Project[Project]($project: Project)
-
-    final case class Redact[Redact]($redact: Redact)
-
-    object ReplaceRoot:
-      final case class Command[NewRoot](newRoot: NewRoot)
-    end ReplaceRoot
-    final case class ReplaceRoot[NewRoot]($replaceRoot: ReplaceRoot.Command[NewRoot])
-
-    final case class ReplaceWith[Replacement]($replaceWith: Replacement)
-
-    object Sample:
-      final case class Command(size: Int)
-    end Sample
-    final case class Sample($sample: Sample.Command)
-
-    final case class Search[Search]($search: Search)
-
-    final case class Set[Set]($set: Set)
-
-    object Skip:
-      type Command = Int
-    end Skip
-    final case class Skip($skip: Skip.Command)
-
-    final case class Sort[Sort]($sort: Sort)
-
-    final case class SortByCount[SortByCount]($sortByCount: SortByCount)
-
-    object UnionWith:
-      type Command[Pipeline] = UnionWithCommand[Pipeline] | String
-      final case class UnionWithCommand[Pipeline](coll: String, pipeline: Pipeline)
-    end UnionWith
-    final case class UnionWith[Pipeline]($unionWith: UnionWith.Command[Pipeline])
-
-    object Unset:
-      type Command = List[String] | String
-    end Unset
-    final case class Unset($unset: Unset.Command)
-
-    object Unwind:
-      type Command = UnwindCommand | String
-
-      final case class UnwindCommand(path: String,
-                                     includeArrayIndex: Option[String],
-                                     preserveNullAndEmptyArrays: Option[Boolean])
-    end Unwind
-    final case class Unwind($unwind: Unwind.Command)
-
-  end Aggregate
-  final case class Aggregate[Pipeline](aggregate: String,
-                             pipeline: List[Pipeline],
-                             explain: Option[Boolean] = None,
-                             allowDiskUse: Option[Boolean] = None,
-                             cursor: Option[Aggregate.Cursor],
-                             maxTimeMS: Option[Int] = None,
-                             bypassDocumentValidation: Option[Boolean] = None,
-                             readConcern: Option[ReadConcern] = None,
-                             collation: Option[Collation] = None,
-                             comment: Option[Json] = None,
-                             writeConcern: Option[WriteConcern] = None) derives Codec.AsObject

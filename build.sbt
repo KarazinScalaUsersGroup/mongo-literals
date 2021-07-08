@@ -2,7 +2,7 @@ import Dependencies._
 
 lazy val root = project
   .in(file("."))
-  .settings(name := "mongo4s")
+  .settings(name := "mongo-literals")
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= dependencies)
   .settings(testFrameworks += new TestFramework("munit.Framework"))
@@ -20,19 +20,18 @@ lazy val dependencies =
 testFrameworks += new TestFramework("munit.Framework")
 
 lazy val commonSettings = Seq(
-    scalaVersion     := "3.0.0-RC3",
+    scalaVersion     := "3.0.0",
     organization     := "group.scala.karazin",
     organizationName := "Karazin Scala Users Group",
     version          := "0.1.0-SNAPSHOT",
     scalacOptions ++= Seq(
         "-deprecation",
         "-unchecked",
-        "-Xmax-inlines", "32",
         "-Xfatal-warnings",
         "-Xprint-suspension",
         "-language:postfixOps",
         "-language:implicitConversions",
-        "-language:higherKinds"
+        "-language:higherKinds",
     ),
     javacOptions ++= Seq(
         "-source", "11",
