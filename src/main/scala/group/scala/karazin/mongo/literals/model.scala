@@ -1,14 +1,10 @@
-package group.scala.karazin.mongo4s
+package group.scala.karazin.mongo.literals
 
 import cats.data.NonEmptyList
-import io.circe.Json
-import io.circe.JsonObject
-import io.circe.Encoder
-import io.circe.Codec
 import io.circe.syntax._
 import io.circe._
 
-import group.scala.karazin.mongo4s.coders.given
+import group.scala.karazin.mongo.literals.coders.{given, _}
 
 object model:
 
@@ -88,11 +84,11 @@ object model:
   end Update
 
   final case class Update[Q, U, ArrayFilters, Hint](update: String,
-                                                             updates: List[Update.Update[Q, U, ArrayFilters, Hint]],
-                                                             ordered: Option[Boolean] = None,
-                                                             writeConcern: Option[WriteConcern] = None,
-                                                             bypassDocumentValidation: Option[Boolean] = None,
-                                                             comment: Option[Json] = None) derives Codec.AsObject
+                                                    updates: List[Update.Update[Q, U, ArrayFilters, Hint]],
+                                                    ordered: Option[Boolean] = None,
+                                                    writeConcern: Option[WriteConcern] = None,
+                                                    bypassDocumentValidation: Option[Boolean] = None,
+                                                    comment: Option[Json] = None) derives Codec.AsObject
 
   object Delete:
 

@@ -1,17 +1,31 @@
-package group.scala.karazin.mongo4s.coders
+package group.scala.karazin.mongo.literals
 
 import java.time.Instant
 
 import cats.implicits._
 import cats.{MonadError, Traverse}
-import io.circe.{Encoder, Decoder, Json, JsonNumber, JsonObject, ParsingFailure, HCursor}
 import io.circe.syntax._
+import io.circe._
 import org.mongodb.scala.bson._
 
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 object coders:
+
+  given intOrStringEncoder: Encoder[Int | String] = value =>
+    value match
+      case v: Int ⇒ v.toInt.asJson
+      case v: String ⇒ v.toString.asJson
+
+  given intOrStringDecoder: Decoder[Int | String] = new Decoder[Int | String] {
+    def apply(c: HCursor): Decoder.Result[Int | String] = {
+      c.focus match
+        case Some(json) if json.isNumber && json.asNumber.get.toInt.isDefined ⇒ json.as[Int]
+        case Some(json) if json.isString                                      ⇒ json.as[String]
+        case _                                                                ⇒ c.as[Int]
+    }
+  }
 
   extension (document: Document)
     def toCirceJson[F[_]](using M: MonadError[F, Throwable]): F[Json] = {
@@ -30,36 +44,22 @@ object coders:
     def toCirceJson[F[_]](using M: MonadError[F, Throwable]): F[Json] =
       M.fromEither(bsonFolder(bson))
 
-    def toCirceJsonUnsafe: Json =
-      bsonFolder(bson).right.get
+//    def toCirceJsonUnsafe: Json =
+//      bsonFolder(bson).right.get
 
   extension (json: Json)
     def toBson[F[_]](using M: MonadError[F, Throwable]): F[BsonValue] =
       M.fromEither(json.foldWith(jsonFolder))
 
-    def toBsonUnsafe: BsonValue =
-      json.foldWith(jsonFolder).right.get
+//    def toBsonUnsafe: BsonValue =
+//      json.foldWith(jsonFolder).right.get
 
   extension [V: Encoder](value: V)
     def toBson[F[_]](using M: MonadError[F, Throwable]): F[BsonValue] =
       M.fromEither(value.asJson.foldWith(jsonFolder))
 
-    def toBsonUnsafe: BsonValue =
-      value.asJson.foldWith(jsonFolder).right.get
-
-  given intOrStringEncoder: Encoder[Int | String] = value =>
-    value match
-      case v: Int ⇒ v.toInt.asJson
-      case v: String ⇒ v.toString.asJson
-
-  given intOrStringDecoder: Decoder[Int | String] = new Decoder[Int | String] {
-    def apply(c: HCursor): Decoder.Result[Int | String] = {
-      c.focus match
-        case Some(json) if json.isNumber && json.asNumber.get.toInt.isDefined ⇒ json.as[Int]
-        case Some(json) if json.isString                                      ⇒ json.as[String]
-        case _                                                                ⇒ c.as[Int]
-    }
-  }
+//    def toBsonUnsafe: BsonValue =
+//      value.asJson.foldWith(jsonFolder).right.get
 
   private[this] def readerFailure(value: BsonValue): ParsingFailure =
     ParsingFailure(
@@ -81,7 +81,7 @@ object coders:
       v.getValues.asScala.toVector.map(bsonFolder).sequence.map(Json.fromValues)
     case v: BsonDocument => v.entrySet().asScala.toVector.map { m =>
         bsonFolder(m.getValue).map(m.getKey -> _)
-      }.sequence.right.map(Json.fromFields)
+      }.sequence.map(Json.fromFields)
     case v: BsonDateTime            => Right(Json.fromString(Instant.ofEpochMilli(v.getValue).toString))
     case v: BsonTimestamp           => Right(Json.fromString(Instant.ofEpochMilli(v.getValue).toString))
     case _: BsonNull                => Right(Json.Null)
@@ -125,10 +125,10 @@ object coders:
       final def onArray(value: Vector[Json]): Either[Throwable, BsonValue] =
         Traverse[Vector].traverse(value) { json =>
           json.foldWith(self)
-        }.right.map(BsonArray(_))
+        }.map(BsonArray.fromIterable(_))
 
       final def onObject(value: JsonObject): Either[Throwable, BsonValue] =
         Traverse[Vector].traverse(value.toVector) {
-          case (key, json) => json.foldWith(self).right.map(key -> _)
-        }.right.map(BsonDocument(_))
+          case (key, json) => json.foldWith(self).map(key -> _)
+        }.map(BsonDocument(_))
     }
