@@ -42,6 +42,37 @@ class BsonEncodeSuite extends munit.ScalaCheckSuite:
     }
   }
 
+  property("encode Insert Command into Bson with embedded field") {
+
+    case class MyDocument(userName: String, age: Int, isActive: Boolean) derives Codec.AsObject
+
+    extension (inline sc: StringContext)
+      inline def insert(inline args: Any*): Json = {
+        ${ macros.encode[Insert[MyDocument]]('sc, 'args, """ "insert": "collection", """) }
+      }
+
+    forAll { (name: String, age: Int, isActive: Boolean) =>
+
+      val document = MyDocument(name, age, isActive)
+
+      val insert: Json =
+        insert"""{
+                "documents": [$document]
+              }"""
+
+      val expected: Json = Json.obj(
+        "insert" -> Json.fromString("collection"),
+        "documents" -> (List(document)).asJson
+      )
+
+      val bson = insert.toBson[Try]
+
+      assert(bson.isSuccess)
+      assert(bson.get.isDocument)
+      assertEquals(bson.get.asDocument().toCirceJson[Try], Success(expected))
+    }
+  }
+
   property("encode Insert Command with WriteConcern into Bson representation") {
 
     case class MyDocument(userName: String, age: Int, isActive: Boolean) derives Codec.AsObject
