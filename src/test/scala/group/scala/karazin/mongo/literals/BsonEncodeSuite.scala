@@ -3,7 +3,7 @@ package group.scala.karazin.mongo.literals
 import io.circe._
 import io.circe.syntax._
 import group.scala.karazin.circe.literal.extras._
-import group.scala.karazin.mongo.literals.model.{Delete, Find, Insert, Update}
+import group.scala.karazin.mongo.literals.model.{Delete, Find, Insert, Update, WriteConcern}
 import group.scala.karazin.mongo.literals.model.Delete.{Delete => DeleteObj}
 import group.scala.karazin.mongo.literals.coders._
 
@@ -31,6 +31,39 @@ class BsonEncodeSuite extends munit.ScalaCheckSuite:
         insert"""{
                 "insert": "collection",
                 "documents": [$document]
+              }
+            """
+
+      val bson = insert.toBson[Try]
+
+      assert(bson.isSuccess)
+      assert(bson.get.isDocument)
+      assertEquals(bson.get.asDocument().toCirceJson[Try], Success(insert))
+    }
+  }
+
+  property("encode Insert Command with WriteConcern into Bson representation") {
+
+    case class MyDocument(userName: String, age: Int, isActive: Boolean) derives Codec.AsObject
+
+    extension (inline sc: StringContext)
+      inline def insert(inline args: Any*): Json = {
+        ${ macros.encode[Insert[MyDocument]]('sc, 'args) }
+      }
+
+    forAll { (name: String, age: Int, isActive: Boolean) =>
+
+      val document = MyDocument(name, age, isActive)
+
+      val insert: Json =
+        insert"""{
+                "insert": "collection",
+                "documents": [$document],
+                "writeConcern": {
+                    "w": 1,
+                    "j": true,
+                    "wtimeout": 1000
+                  }
               }
             """
 
