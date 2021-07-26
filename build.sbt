@@ -23,7 +23,7 @@ lazy val commonSettings = Seq(
     scalaVersion     := "3.0.0",
     organization     := "group.scala.karazin",
     organizationName := "Karazin Scala Users Group",
-    version          := "0.1.0-SNAPSHOT",
+    version          := "0.1.1-SNAPSHOT",
     scalacOptions ++= Seq(
         "-deprecation",
         "-unchecked",

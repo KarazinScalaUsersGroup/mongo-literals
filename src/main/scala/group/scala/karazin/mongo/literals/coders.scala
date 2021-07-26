@@ -92,7 +92,7 @@ object coders:
     case _: BsonMaxKey              => Left(readerFailure(bson))
     case _: BsonMinKey              => Left(readerFailure(bson))
     case id: BsonObjectId           => Right(Json.fromString(id.getValue.toHexString))
-    case _: BsonBinary              => Left(readerFailure(bson))
+    case v: BsonBinary              => Right(Json.fromFields(("type", Json.fromInt(v.getType())) :: ("data", Json.fromString(new String(v.getData(), "UTF-8"))) :: Nil))
     case v: BsonRegularExpression   => Right(Json.fromString(v.getPattern))
   }
 
