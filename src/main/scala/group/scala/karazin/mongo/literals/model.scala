@@ -161,3 +161,17 @@ object model:
                                 readConcern: Option[ReadConcern] = None,
                                 collation: Option[Collation] = None,
                                 comment: Option[Json] = None) derives Codec.AsObject
+
+  final case class Aggregate[Cursor, Hint, Let](aggregate: String | Int,
+                                                          pipeline: Seq[JsonObject],
+                                                          cursor: Cursor,
+                                                          explain: Option[Boolean] = None,
+                                                          allowDiskUse: Option[Boolean] = None,
+                                                          maxTimeMS: Option[Long] = None,
+                                                          bypassDocumentValidation: Option[Boolean] = None,
+                                                          readConcern: Option[ReadConcern] = None,
+                                                          collation: Option[Collation] = None,
+                                                          hint: Option[Hint] = None,
+                                                          comment: Option[Json] = None,
+                                                          writeConcern: Option[WriteConcern] = None,
+                                                          let: Option[Let] = None) derives Codec.AsObject

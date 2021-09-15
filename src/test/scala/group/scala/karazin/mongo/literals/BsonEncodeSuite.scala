@@ -3,7 +3,7 @@ package group.scala.karazin.mongo.literals
 import io.circe._
 import io.circe.syntax._
 import group.scala.karazin.circe.literal.extras._
-import group.scala.karazin.mongo.literals.model.{Delete, Find, Insert, Update, WriteConcern}
+import group.scala.karazin.mongo.literals.model.{Delete, Find, Insert, Update, WriteConcern, Aggregate}
 import group.scala.karazin.mongo.literals.model.Delete.{Delete => DeleteObj}
 import group.scala.karazin.mongo.literals.coders._
 
@@ -208,5 +208,29 @@ class BsonEncodeSuite extends munit.ScalaCheckSuite:
       assert(bson.isSuccess)
       assert(bson.get.isDocument)
       assertEquals(bson.get.asDocument().toCirceJson[Try], Success(find))
+    }
+  }
+
+  property("encode Aggregate Command into Bson representation") {
+
+    extension (inline sc: StringContext)
+      inline def aggregate(inline args: Any*): Json = {
+        ${ macros.encode[Aggregate[Json, Json, Json]]('sc, 'args) }
+      }
+
+    forAll { (collection: String) =>
+
+      val aggregate: Json =
+        aggregate"""{
+                       "aggregate": $collection,
+                       "pipeline": [],
+                       "cursor": {}
+                     }"""
+
+      val bson = aggregate.toBson[Try]
+
+      assert(bson.isSuccess)
+      assert(bson.get.isDocument)
+      assertEquals(bson.get.asDocument().toCirceJson[Try], Success(aggregate))
     }
   }
