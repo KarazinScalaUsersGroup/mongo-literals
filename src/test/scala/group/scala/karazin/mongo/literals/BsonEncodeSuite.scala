@@ -215,7 +215,7 @@ class BsonEncodeSuite extends munit.ScalaCheckSuite:
 
     extension (inline sc: StringContext)
       inline def aggregate(inline args: Any*): Json = {
-        ${ macros.encode[Aggregate[List[JsonObject], Json, Json, Json]]('sc, 'args) }
+        ${ macros.encode[Aggregate[Json, Json, Json]]('sc, 'args) }
       }
 
     forAll { (collection: String) =>

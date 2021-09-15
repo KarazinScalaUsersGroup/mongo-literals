@@ -162,8 +162,8 @@ object model:
                                 collation: Option[Collation] = None,
                                 comment: Option[Json] = None) derives Codec.AsObject
 
-  final case class Aggregate[Pipeline, Cursor, Hint, Let](aggregate: String | Int,
-                                                          pipeline: Pipeline,
+  final case class Aggregate[Cursor, Hint, Let](aggregate: String | Int,
+                                                          pipeline: Seq[JsonObject],
                                                           cursor: Cursor,
                                                           explain: Option[Boolean] = None,
                                                           allowDiskUse: Option[Boolean] = None,
