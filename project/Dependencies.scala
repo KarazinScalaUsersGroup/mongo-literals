@@ -4,7 +4,7 @@ object Dependencies {
   
   object Version {
     val circe                   = "0.14.0"
-    val `circe-literal-extras`  = "0.1.0-SNAPSHOT"
+    val `circe-literal-extras`  = "0.1.0"
     val `scodec-bits`           = "1.1.27"
     val `scodec-cats`           = "1.1.0"
     val mongodb                 = "4.2.2"
