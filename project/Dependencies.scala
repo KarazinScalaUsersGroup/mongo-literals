@@ -3,13 +3,13 @@ import sbt._
 object Dependencies {
   
   object Version {
-    val circe                   = "0.14.0"
-    val `circe-literal-extras`  = "0.1.0-SNAPSHOT"
-    val `scodec-bits`           = "1.1.27"
+    val circe                   = "0.15.0-M1"
+    val `circe-literal-extras`  = "0.2.0"
+    val `scodec-bits`           = "1.1.34"
     val `scodec-cats`           = "1.1.0"
     val mongodb                 = "4.2.2"
     val `logback-classic`       = "1.2.3"
-    val munit                   = "0.7.26"
+    val munit                   = "1.0.0-M6"
   }
 
   lazy val circe: Seq[ModuleID] = Seq(
