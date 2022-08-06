@@ -163,15 +163,29 @@ object model:
                                 comment: Option[Json] = None) derives Codec.AsObject
 
   final case class Aggregate[Cursor, Hint, Let](aggregate: String | Int,
-                                                          pipeline: Seq[JsonObject],
-                                                          cursor: Cursor,
-                                                          explain: Option[Boolean] = None,
-                                                          allowDiskUse: Option[Boolean] = None,
-                                                          maxTimeMS: Option[Long] = None,
-                                                          bypassDocumentValidation: Option[Boolean] = None,
-                                                          readConcern: Option[ReadConcern] = None,
-                                                          collation: Option[Collation] = None,
-                                                          hint: Option[Hint] = None,
-                                                          comment: Option[Json] = None,
-                                                          writeConcern: Option[WriteConcern] = None,
-                                                          let: Option[Let] = None) derives Codec.AsObject
+                                                pipeline: Seq[JsonObject],
+                                                cursor: Cursor,
+                                                explain: Option[Boolean] = None,
+                                                allowDiskUse: Option[Boolean] = None,
+                                                maxTimeMS: Option[Long] = None,
+                                                bypassDocumentValidation: Option[Boolean] = None,
+                                                readConcern: Option[ReadConcern] = None,
+                                                collation: Option[Collation] = None,
+                                                hint: Option[Hint] = None,
+                                                comment: Option[Json] = None,
+                                                writeConcern: Option[WriteConcern] = None,
+                                                let: Option[Let] = None) derives Codec.AsObject
+
+  case class Gte[T]($gte: T) derives Codec.AsObject
+  case class Lte[T]($lte: T) derives Codec.AsObject
+  case class In[T]($in: List[T]) derives Codec.AsObject
+  case class Set[T]($set: T) derives Codec.AsObject
+  case class Ne[T]($ne: T) derives Codec.AsObject
+  case class Nin[T]($nin: List[T]) derives Codec.AsObject
+  case class Match[T]($match: T) derives Codec.AsObject
+  case class Group[T]($group: T) derives Codec.AsObject
+  case class Sort[T]($sort: T) derives Codec.AsObject
+  case class Sum($sum: Int) derives Codec.AsObject
+  case class Meta($meta: String) derives Codec.AsObject
+  case class Unwind($unwind: String) derives Codec.AsObject
+  case class Search($search: String) derives Codec.AsObject
